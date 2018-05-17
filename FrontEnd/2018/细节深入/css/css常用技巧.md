@@ -43,7 +43,6 @@ a[href^="http"]:empty::before {
 ### **为更好的移动体验，为表单元素设置字体大小**
 当触发<select>的下拉列表时，
 为了避免表单元素在移动浏览器（IOS Safari 等等）上的缩放，加上font-size
-  
 ```
 input[type="text"],
 input[type="number"],
@@ -64,7 +63,7 @@ textarea {
 ```
 
 #### **滚动条样式**
-制作一个漂亮的滚动条样式
+
 
 ```
 
