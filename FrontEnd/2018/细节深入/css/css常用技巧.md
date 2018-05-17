@@ -250,6 +250,24 @@ span {
 }
 ```
 
+### **垂直居中**
+无需知道自己和父节点的高度
+```
+div{
+position: relative;
+  img{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    -webkit-transform:translate(-50%,-50%);
+    -moz-transform:translate(-50%,-50%);
+    -ms-transform:translate(-50%,-50%);
+  }
+}
+```
+
+
 ### **为更好的移动体验，为表单元素设置字体大小**
 当触发<select>的下拉列表时，为了避免表单元素在移动浏览器（IOS Safari 等等）上的缩放，加上font-size
 ```
