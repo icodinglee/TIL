@@ -41,7 +41,8 @@ a[href^="http"]:empty::before {
 ```
 
 #### **为更好的移动体验，为表单元素设置字体大小**
-当触发<select>的下拉列表时，为了避免表单元素在移动浏览器（IOS Safari 等等）上的缩放，加上font-size：
+当触发<select>的下拉列表时，为了避免表单元素在移动浏览器（IOS Safari 等等）上的缩放，加上font-size
+  
 ```
 input[type="text"],
 input[type="number"],
@@ -50,7 +51,9 @@ textarea {
   font-size: 16px;
 }
 ```
+
 #### **清除浮动 clearfix**
+
 ```
 .clearfix::after {
   content: '';
@@ -61,6 +64,7 @@ textarea {
 
 #### **滚动条样式**
 制作一个漂亮的滚动条样式
+
 ```
 
 html 
@@ -88,6 +92,7 @@ css
 ```
 
 #### ** 设置鼠标选择文字的样式**
+
 ```
 ::selection {
   background: aquamarine;
@@ -100,6 +105,7 @@ css
 ```
 
 #### ** css变量**
+
 ```
 html
 <p class="custom-variables">CSS is awesome!</p>
@@ -120,6 +126,7 @@ css
 ```
 
 #### **禁止内容被选择**
+
 ```
 html
 <p>You can select me.</p>
@@ -133,6 +140,7 @@ css
 
 #### ** 简单构造loading**
 [效果实现](https://codepen.io/pen/?)
+
 ```
 html
 <div class="donut"></div>
@@ -158,6 +166,7 @@ css
 ```
 
 #### **创建一个基于元素颜色的box-shadow**
+
 ```
 html
 <div class="dynamic-shadow"></div>
@@ -186,6 +195,7 @@ css
 ![实现效果](/img/bV9VEB)
 
 #### **绘制文字颜色渐变**
+
 ```
 html
 <p class="gradient-text">Gradient text</p>
@@ -199,6 +209,7 @@ css
 ```
 
 #### **下划线滑动效果**
+
 ```
 html
 <p class="hover-underline-animation">Hover this text to see the effect!</p>
@@ -228,6 +239,7 @@ css
 ```
 
 #### **选中一个时，隐藏兄弟**
+
 [查看效果](https://codepen.io/pen/?)
 ```
 html
