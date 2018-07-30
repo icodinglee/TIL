@@ -183,3 +183,14 @@ module.exports = webpackMerge(baseConfig, {
 2.像antd、lodash这种功能性组件库，可以通过tree shaking (webpack 在打包的过程中会将没用的代码进行清除) 来进行消除，只保留有用的代码，千万不能直接打包到vendor中去，不然会大量加载执行无用代码。
 
 ### 减少打包文件的体积
+要想减少打包后的体积，就需要使用到webpack2提供的tree shaking功能和webpack3提供的scope hoisting功能。
+
+### 压缩代码
+压缩代码可以使用 UglifyJsPlugin 这个插件对代码进行压缩。
+
+
+
+
+
+
+-
