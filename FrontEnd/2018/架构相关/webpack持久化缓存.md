@@ -42,77 +42,106 @@ module.exports = {
 
 上述四个部分只要任意部分发生变化，生成的分块文件就不一样，缓存也会失效。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+##### 1.源代码变化
+##### 2.webpack启动运行时候的runtime代码.
+例如配置项如下：
+```
+const path = require('path');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin'); // 将 css 从打包好的 js 文件中抽离，生成独立的 css 文件
+module.exports = {
+  entry: {
+    pageA: [path.resolve(__dirname, './src/pageA.js')],
+    pageB: path.resolve(__dirname, './src/pageB.js'),
+  },
+  output: {
+    path: path.resolve(__dirname, './dist'),
+    filename: 'js/[name].[chunkhash:8].js',
+    chunkFilename: 'js/[name].[chunkhash:8].js'
+  },
+  module: {
+    rules: [
+      {
+        // 用正则去匹配要用该 loader 转换的 CSS 文件
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: ["css-loader"]
+        })  
+      }
+    ]
+  },
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'common',  // 公共模块
+      minChunks: 2,
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: ({ resource }) => (
+        resource && resource.indexOf('node_modules') >= 0 && resource.match(/\.js$/) // 抽离第三方模块
+      )
+    }),
+    new ExtractTextPlugin({
+      filename: `css/[name].[chunkhash:8].css`,
+    }),
+  ]
+}
+```
+
+此时，在webpack启动的时候需要执行一些启动代码
+```
+(function(modules) { 
+  window["webpackJsonp"] = function webpackJsonpCallback(chunkIds, moreModules) {
+    // ...
+  };
+  function __webpack_require__(moduleId) {
+    // ...
+  }
+  __webpack_require__.e = function requireEnsure(chunkId, callback) {
+    // ...
+    script.src = __webpack_require__.p + "" + chunkId + "." + ({"0":"pageA","1":"pageB","3":"vendor"}[chunkId]||chunkId) + "." + {"0":"e72ce7d4","1":"69f6bbe3","2":"9adbbaa0","3":"53fa02a7"}[chunkId] + ".js";
+  };
+})([]);
+```
+其中有一行代码每次更新之后都会改变，因为启动代码需要清楚的知道chunkid和chunkhash值的对应关系，这样在异步加载的时候才能正确的拼接出异步js文件的路径。
+
+因此我们需要将这部分代码抽离，避免内置在其他代码中（pageA、pageB）的代码发生改变时chunkhash会发生改变。因此我们需要将这一部分runtime代码单独抽取出来。
+
+```
+module.exports = {
+  // ...
+  plugins: [
+    // ...
+    // 放到其他的 CommonsChunkPlugin 后面
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'runtime',
+      minChunks: Infinity,
+    }),
+  ]
+}
+```
+这相当于告诉webpack帮我把运行时的代码进行抽离，放到单独的文件中。
+
+多生成了一个 runtime.xxxx.js，以后你在改动业务代码的时候，common chunk 的 hash 值就不会变了，取而代之的是 runtime chunk hash 值会变，既然这部分代码是动态的，可以通过 chunk-manifest-webpack-plugin 将他们 inline 到 html 中，减少一次网络请求。
+
+##### 三、webpack 生成的模块 moduleid
+```
+默认情况下，模块的 id 是这个模块在模块数组中的索引。OccurenceOrderPlugin 会将引用次数多的模块放在前面，在每次编译时模块的顺序都是一致的，如果你修改代码时新增或删除了一些模块，这将可能会影响到所有模块的 id。
+```
+最佳实践方案是通过 HashedModuleIdsPlugin 这个插件，这个插件会根据模块的相对路径生成一个长度只有四位的字符串作为模块的 id，既隐藏了模块的路径信息，又减少了模块 id 的长度。
+
+这样一来，改变 moduleId 的方式就只有文件路径的改变了，只要你的文件路径值不变，生成四位的字符串就不变，hash 值也不变。增加或删除业务代码模块不会对 moduleid 产生任何影响。
+
+```
+module.exports = {
+  plugins: [
+    new webpack.HashedModuleIdsPlugin(),
+    // 放在最前面
+    // ...
+  ]
+}
+```
 
 
 -
