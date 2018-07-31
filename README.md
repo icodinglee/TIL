@@ -5,7 +5,9 @@
     |- 架构相关
       |- react_redux 项目性能优化
       |- 构建兼容IE8的可视化项目
-    |- 技术深入
+      |- webpack优化实践
+      |- webpack持久化缓存
+    |- 技术深入
       |- css
         |- css在浏览器的兼容问题及其解决方案
         |- css巧用- 实现遮罩
@@ -22,6 +24,8 @@
   |- Memorandum
     |- mysql
     |- rem适配
+    |- svg
+    |- svg-dom.md
 |- Synthesis
   |- 数据结构与算法
     |- 分治算法
