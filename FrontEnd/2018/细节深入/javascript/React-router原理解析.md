@@ -118,12 +118,75 @@ class Router {
   }
 }
 ```
-router跟之前Hash路由很像，不同的地方在于init初始化函数，首先需要获取所有特殊的链接标签，然后监听点击事件，并阻止默认行为
+router跟之前Hash路由很像，不同的地方在于init初始化函数，首先需要获取所有特殊的链接标签，然后监听点击事件，并阻止默认行为,触发history.pushState以及更新相应的视图。
 
+另外绑定popState事件，当用户点击前进或者后退按钮的时候，能够及时更新视图，另外当刚进去页面的时候也会触发一次视图更新。
 
+修改相应的html内容：
+```
+<div id="app">
+  <ul>
+    <li><a data-href="/" href="#">home</a></li>
+    <li><a data-href="/about" href="#">about</a></li>
+    <li><a data-href="/topics" href="#">topics</a></li>
+  </ul>
+  <div id="content"></div>
+</div>
+<script src="js/router.js"></script>
+<script>
+  const router = new Router();
+  router.init();
+  router.route('/', function() {
+    document.getElementById('content').innerHTML = 'Home';
+  });
+  router.route('/about', function() {
+    document.getElementById('content').innerHTML = 'About';
+  });
+  router.route('/topics', function() {
+    document.getElementById('content').innerHTML = 'Topics';
+  });
+</script>
+```
+跟以前的html一样，区别在于用data-href来表示要实现软路由的链接标签。
 
+#### 基于 React 的 Hash 路由系统
+思路： 当path匹配上路由时则显示component,匹配不上不显示，如果没有path字段则默认一直显示，而exact字段则表示必须要完全匹配，避免像path='/'匹配上path='/about'这样的情况出现。
+所谓的局部刷新，本质在于：当路由发色变化的时候，跟当前url匹配的component正常渲染，跟当前url不匹配的component渲染为null.
 
-
+**Link组件**
+```
+export class Link extends Component {
+    render() {
+        const {to, children} = this.props;
+        return <a href={`${to}`}>{this.props.children}</a>
+    }
+}
+```
+**Route组件**
+```
+export class Route extends Component{
+    componentWillMount(){
+      window.addEventListener('hashchange', this.updateView, fasle);
+    }
+    componentWillUnmount(){
+      window.removeEventListener('hashchange', this.updateView, false);
+    }
+    updateView = ()=>{
+      this.forceUpdate();
+    }
+    render(){
+      const { path, exact, componnet } = this.props;
+      const match = matchPath(window.location.hash, {exact, path})；
+      if (!match) {
+         return null;
+      }
+      if (component) {
+        return React.createElement(component, { match });
+      }
+      return null;
+    }
+}
+```
 
 
 
