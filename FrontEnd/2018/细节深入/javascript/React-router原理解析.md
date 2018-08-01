@@ -187,69 +187,102 @@ export class Route extends Component{
     }
 }
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+当注册Route组件的时候，将组件更新的回调函数添加到hashchange事件中，而组件卸载时候移除组件更新的回调函数避免内存泄漏。
+当页面hash值变化时就会触发所有注册的回调函数的执行，使所有的Route组件都去更新实例。
+当render函数的实现中，有个matchPath函数来判断当前路径是否与该组件对应的路径匹配，如果匹配不上，返回null,如果匹配上了，就渲染该Route组件对应的component组件。
+
+match的实现
+```
+function matchPath(hash, options){
+  // 截断hash首位的#
+  hash = hash.slice(1);
+  const {exact = false, path} = options;
+  // 如果没有传入path,代表始钟匹配
+  if(!path){
+    return {
+     path: null,
+     url: null,
+     isExact: true
+    }
+  };
+  
+  const match = new RegExp(path).exec(hash);
+  if(!match){
+    // 什么都没匹配到
+    return null
+  }
+  const url = match[0];
+  const isExact = hash === url;
+  if(exact && !isExact){
+    // 匹配上了，但是不是精确匹配
+    return null;
+  }
+  return {
+    path,
+    url,
+    isExact
+  }
+}
+```
+基本实现就是这些。不过在初次加载页面的时候hash值不带/，所以导致无法加载Index组件，所以我们在hashRouter组件中添加一次hash的变化，这样就保证的首次加载页面的准确性。
+```
+export class HashRouter extends Component{
+  componentDidMount() {
+    window.location.hash = '/';
+  }
+  render(){
+    return this.props.children;
+  }
+}
+```
+#### #### 基于 React 的 Hash 路由系统
+
+![](https://raw.githubusercontent.com/happylindz/blog/master/images/router/5.png)
+
+大致分为两步：
+1.在初始化的过程中，将所有Route实例添加到一个instances数组，并且为每一个组件都绑定popstate事件。
+2.在三种触发路由更新的途径结束后，遍历所有instances中的实例，强制重新渲染，从而达到更新的目的。
+
+```
+// 注册component实例
+const instances = [];
+const register = component => instances.push(component);
+const unregister = component => instances.splice(instances.indexOf(component), 1);
+```
+
+Route组件大致相同，不同于注册和协助钩子函数的不同；初始化时需要添加到instances中的绑定popstate事件。
+```
+export class Route extends Component{
+  componentWillMount() {
+    window.addEventListner('popstate', this.handlePopState);
+    register(this);
+  }
+  componentWillUnmount(){
+    window.removeEventListner('popstate', this.handlePopState);
+    unregister(this);
+  }
+  handlePopState = () => {
+    this.forceUpdate();
+  }
+  //...
+}
+```
+** Link组件实现**
+需要阻止默认事件并且当点击的时候需要广播所有实例强制触发刷新。
+```
+export class Link extends Component{
+  handleClick =  e => {
+    e.preventDefault();
+    const { to } = this.props;
+    window.history.pushState({}, null, to);
+  }
+  render() {
+    const {to, children} = this.props;
+    return (
+      <a href={to} onClick={this.handleClick}>{children}</a>
+    )
+  }
+}
+```
 
 -
