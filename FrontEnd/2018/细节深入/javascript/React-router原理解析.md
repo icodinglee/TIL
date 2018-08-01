@@ -31,8 +31,8 @@ class Router {
 }
 
 ```
-1.routes用来存放不同路由对应的回调函数
-2.init用来初始化路由，在load事件发生之后刷新页面，并且绑定hashchange事件，当hash值改变时触发对应的回调函数。
+- 1.routes用来存放不同路由对应的回调函数
+- 2.init用来初始化路由，在load事件发生之后刷新页面，并且绑定hashchange事件，当hash值改变时触发对应的回调函数。
 ```
 <div id="app">
   <ul>
@@ -69,17 +69,17 @@ history路由是基于html5规范，在html5规范中提供了history.pushState 
 当你执行history.pushState({}, null, '/about')时候，页面url会从http://xxx/跳转到hhtp://xxxx/about 可以在改变url的同时，并不会刷新页面。
 
 pushState的参数说明：
-1.state: 存储JSON字符串，可以用在popstate事件中
-2.title: 现在大多数浏览器忽略了这个参数，直接用null
-3.url：任意有效的URL,用于更新浏览器的地址栏
+- 1.state: 存储JSON字符串，可以用在popstate事件中
+- 2.title: 现在大多数浏览器忽略了这个参数，直接用null
+- 3.url：任意有效的URL,用于更新浏览器的地址栏
 
 这么说下来history也有着控制路由的能力，hash的改变可以触发onhashhistory事件，而history的改变并不会触发任何事件，这让我们无法直接去监听history的改变而做出相应的改变。
 
 因此我们需要换个思路，把所有可能触发history改变的情况罗列出来，并将这些方式进行一一拦截监听。
 可以触发的条件有：
-1.点击浏览器的前进或者后退按钮
-2.点击a标签
-3.在js代码中触发history.push(replace)State函数
+- 1.点击浏览器的前进或者后退按钮
+- 2.点击a标签
+- 3.在js代码中触发history.push(replace)State函数
 
 只要对上述三种情况进行拦截，就可以变相监听到history的改变而做出调整。
 HTML5规范中有相应的onpopState事件，通过它可以监听到前进或者后退按钮。值得注意的是，调用history.push(replace)State并不会触发onpopstate事件。
@@ -267,6 +267,7 @@ export class Route extends Component{
   //...
 }
 ```
+
 ** Link组件实现**
 需要阻止默认事件并且当点击的时候需要广播所有实例强制触发刷新。
 ```
