@@ -235,7 +235,7 @@ export class HashRouter extends Component{
   }
 }
 ```
-#### #### 基于 React 的 Hash 路由系统
+#### 基于 React 的 Hash 路由系统
 
 ![](https://raw.githubusercontent.com/happylindz/blog/master/images/router/5.png)
 
@@ -250,6 +250,7 @@ const register = component => instances.push(component);
 const unregister = component => instances.splice(instances.indexOf(component), 1);
 ```
 
+**Route组件**
 Route组件大致相同，不同于注册和协助钩子函数的不同；初始化时需要添加到instances中的绑定popstate事件。
 ```
 export class Route extends Component{
@@ -268,7 +269,7 @@ export class Route extends Component{
 }
 ```
 
-** Link组件实现**
+**Link组件实现**
 需要阻止默认事件并且当点击的时候需要广播所有实例强制触发刷新。
 ```
 export class Link extends Component{
