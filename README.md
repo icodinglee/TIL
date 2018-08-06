@@ -26,7 +26,7 @@
     |- mysql
     |- rem适配
     |- svg
-    |- svg-dom.md
+    |- svg-dom
 |- Synthesis
   |- 数据结构与算法
     |- 分治算法
